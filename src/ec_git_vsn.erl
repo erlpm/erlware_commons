@@ -15,7 +15,7 @@
 
 %% API
 -export([new/0,
-         vsn/1]).
+    vsn/1]).
 
 -export_type([t/0]).
 
@@ -34,7 +34,7 @@
 new() ->
     {}.
 
--spec vsn(t()|string()) -> {ok, string()} | {error, Reason::any()}.
+-spec vsn(t()|string()) -> {ok, string()} | {error, Reason :: any()}.
 vsn(Data) ->
     {Vsn, RawRef, RawCount} = collect_default_refcount(Data),
     {ok, build_vsn_string(Vsn, RawRef, RawCount)}.
@@ -70,13 +70,13 @@ build_vsn_string(Vsn, RawRef, RawCount) ->
             erlang:binary_to_list(erlang:iolist_to_binary(Vsn));
         _ ->
             erlang:binary_to_list(erlang:iolist_to_binary([Vsn, "+build.",
-                                                           Count, RefTag]))
+                Count, RefTag]))
     end.
 
 get_patch_count(RawRef) ->
     Ref = re:replace(RawRef, "\\s", "", [global]),
     Cmd = io_lib:format("git rev-list --count ~ts..HEAD",
-                         [Ref]),
+        [Ref]),
     case os:cmd(Cmd) of
         "fatal: " ++ _ ->
             0;
@@ -106,7 +106,7 @@ trim(Str, left, Chars) -> string:trim(Str, leading, Chars).
 slice(Str, Len) -> string:slice(Str, Len).
 -else.
 len(Str) -> string:len(Str).
-trim(Str, Dir, [Chars|_]) -> string:strip(Str, Dir, Chars).
+trim(Str, Dir, [Chars | _]) -> string:strip(Str, Dir, Chars).
 slice(Str, Len) -> string:substr(Str, Len + 1).
 -endif.
 

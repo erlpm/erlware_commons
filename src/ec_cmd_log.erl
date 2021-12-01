@@ -23,49 +23,49 @@
 -module(ec_cmd_log).
 
 %% Avoid clashing with `error/3` BIF added in Erlang/OTP 24
--compile({no_auto_import,[error/3]}).
+-compile({no_auto_import, [error/3]}).
 
 -export([new/1,
-         new/2,
-         new/3,
-         log/4,
-         should/2,
-         debug/2,
-         debug/3,
-         info/2,
-         info/3,
-         error/2,
-         error/3,
-         warn/2,
-         warn/3,
-         log_level/1,
-         atom_log_level/1,
-         format/1]).
+    new/2,
+    new/3,
+    log/4,
+    should/2,
+    debug/2,
+    debug/3,
+    info/2,
+    info/3,
+    error/2,
+    error/3,
+    warn/2,
+    warn/3,
+    log_level/1,
+    atom_log_level/1,
+    format/1]).
 
 -include("ec_cmd_log.hrl").
 
--define(RED,     $r).
--define(GREEN,   $g).
--define(YELLOW,  $y).
--define(BLUE,    $b).
+-define(RED, $r).
+-define(GREEN, $g).
+-define(YELLOW, $y).
+-define(BLUE, $b).
 -define(MAGENTA, $m).
--define(CYAN,    $c).
+-define(CYAN, $c).
 
 -define(PREFIX, "===> ").
 
--record(state_t, {log_level=0 :: int_log_level(),
-                  caller=api :: caller(),
-                  intensity=low :: none | low | high}).
+-record(state_t, {log_level = 0 :: int_log_level(),
+    caller = api :: caller(),
+    intensity = low :: none | low | high}).
 
 %%============================================================================
 %% types
 %%============================================================================
 -export_type([t/0,
-              int_log_level/0,
-              atom_log_level/0,
-              log_level/0,
-              caller/0,
-              log_fun/0]).
+    int_log_level/0,
+    atom_log_level/0,
+    log_level/0,
+    caller/0,
+    log_fun/0]).
 
 -type caller() :: api | command_line.
 
@@ -98,16 +98,16 @@ new(LogLevel, Caller) ->
 
 -spec new(log_level(), caller(), intensity()) -> t().
 new(LogLevel, Caller, Intensity) when (Intensity =:= none orelse
-                                       Intensity =:= low orelse
-                                       Intensity =:= high),
-                                      LogLevel >= 0, LogLevel =< 3 ->
-    #state_t{log_level=LogLevel, caller=Caller,
-             intensity=Intensity};
+    Intensity =:= low orelse
+    Intensity =:= high),
+    LogLevel >= 0, LogLevel =< 3 ->
+    #state_t{log_level = LogLevel, caller = Caller,
+        intensity = Intensity};
 new(AtomLogLevel, Caller, Intensity)
-  when AtomLogLevel =:= error;
-       AtomLogLevel =:= warn;
-       AtomLogLevel =:= info;
-       AtomLogLevel =:= debug ->
+    when AtomLogLevel =:= error;
+    AtomLogLevel =:= warn;
+    AtomLogLevel =:= info;
+    AtomLogLevel =:= debug ->
     LogLevel = case AtomLogLevel of
                    error -> 0;
                    warn -> 1;
@@ -121,9 +121,9 @@ new(AtomLogLevel, Caller, Intensity)
 %% function that returns a string
 -spec debug(t(), string() | log_fun()) -> ok.
 debug(LogState, Fun)
-  when erlang:is_function(Fun) ->
+    when erlang:is_function(Fun) ->
     log(LogState, ?EC_DEBUG, fun() ->
-                                     colorize(LogState, ?CYAN, false, Fun())
+        colorize(LogState, ?CYAN, false, Fun())
                              end);
 debug(LogState, String) ->
     debug(LogState, "~ts~n", [String]).
@@ -140,7 +140,7 @@ debug(LogState, FormatString, Args) ->
 info(LogState, Fun)
     when erlang:is_function(Fun) ->
     log(LogState, ?EC_INFO, fun() ->
-                                    colorize(LogState, ?GREEN, false, Fun())
+        colorize(LogState, ?GREEN, false, Fun())
                             end);
 info(LogState, String) ->
     info(LogState, "~ts~n", [String]).
@@ -157,7 +157,7 @@ info(LogState, FormatString, Args) ->
 error(LogState, Fun)
     when erlang:is_function(Fun) ->
     log(LogState, ?EC_ERROR, fun() ->
-                                     colorize(LogState, ?RED, false, Fun())
+        colorize(LogState, ?RED, false, Fun())
                              end);
 error(LogState, String) ->
     error(LogState, "~ts~n", [String]).
@@ -185,7 +185,7 @@ warn(LogState, FormatString, Args) ->
 
 %% @doc Execute the fun passed in if log level is as expected.
 -spec log(t(), int_log_level(), log_fun()) -> ok.
-log(#state_t{log_level=DetailLogLevel}, LogLevel, Fun)
+log(#state_t{log_level = DetailLogLevel}, LogLevel, Fun)
     when DetailLogLevel >= LogLevel ->
     io:format("~ts~n", [Fun()]);
 log(_, _, _) ->
@@ -194,9 +194,9 @@ log(_, _, _) ->
 %% @doc when the module log level is less then or equal to the log level for the
 %% call then write the log info out. When its not then ignore the call.
 -spec log(t(), int_log_level(), string(), [any()]) -> ok.
-log(#state_t{log_level=DetailLogLevel}, LogLevel, FormatString, Args)
-  when DetailLogLevel >= LogLevel,
-       erlang:is_list(Args) ->
+log(#state_t{log_level = DetailLogLevel}, LogLevel, FormatString, Args)
+    when DetailLogLevel >= LogLevel,
+    erlang:is_list(Args) ->
     io:format(FormatString, Args);
 log(_, _, _, _) ->
     ok.
@@ -204,60 +204,60 @@ log(_, _, _, _) ->
 %% @doc return a boolean indicating if the system should log for the specified
 %% levelg
 -spec should(t(), int_log_level() | any()) -> boolean().
-should(#state_t{log_level=DetailLogLevel}, LogLevel)
-  when DetailLogLevel >= LogLevel ->
+should(#state_t{log_level = DetailLogLevel}, LogLevel)
+    when DetailLogLevel >= LogLevel ->
     true;
 should(_, _) ->
     false.
 
 %% @doc get the current log level as an integer
 -spec log_level(t()) -> int_log_level().
-log_level(#state_t{log_level=DetailLogLevel}) ->
+log_level(#state_t{log_level = DetailLogLevel}) ->
     DetailLogLevel.
 
 %% @doc get the current log level as an atom
 -spec atom_log_level(t()) -> atom_log_level().
-atom_log_level(#state_t{log_level=?EC_ERROR}) ->
+atom_log_level(#state_t{log_level = ?EC_ERROR}) ->
     error;
-atom_log_level(#state_t{log_level=?EC_WARN}) ->
+atom_log_level(#state_t{log_level = ?EC_WARN}) ->
     warn;
-atom_log_level(#state_t{log_level=?EC_INFO}) ->
+atom_log_level(#state_t{log_level = ?EC_INFO}) ->
     info;
-atom_log_level(#state_t{log_level=?EC_DEBUG}) ->
+atom_log_level(#state_t{log_level = ?EC_DEBUG}) ->
     debug.
 
 -spec format(t()) -> iolist().
 format(Log) ->
     [<<"(">>,
-     ec_cnv:to_binary(log_level(Log)), <<":">>,
-     ec_cnv:to_binary(atom_log_level(Log)),
-     <<")">>].
+        ec_cnv:to_binary(log_level(Log)), <<":">>,
+        ec_cnv:to_binary(atom_log_level(Log)),
+        <<")">>].
 
 -spec colorize(t(), color(), boolean(), string()) -> string().
 
 -define(VALID_COLOR(C),
-        C =:= $r orelse C =:= $g orelse C =:= $y orelse
+    C =:= $r orelse C =:= $g orelse C =:= $y orelse
         C =:= $b orelse C =:= $m orelse C =:= $c orelse
         C =:= $R orelse C =:= $G orelse C =:= $Y orelse
         C =:= $B orelse C =:= $M orelse C =:= $C).
 
-colorize(#state_t{intensity=none}, _, _, Msg) ->
-                Msg;
+colorize(#state_t{intensity = none}, _, _, Msg) ->
+    Msg;
 %% When it is suposed to be bold and we already have a uppercase
 %% (bold color) we don't need to modify the color
-colorize(State, Color, true, Msg)  when ?VALID_COLOR(Color),
-                                        Color >= $A, Color =< $Z ->
+colorize(State, Color, true, Msg) when ?VALID_COLOR(Color),
+    Color >= $A, Color =< $Z ->
     colorize(State, Color, false, Msg);
 %% We're sneaky we can substract 32 to get the uppercase character if we want
 %% bold but have a non bold color.
 colorize(State, Color, true, Msg) when ?VALID_COLOR(Color) ->
     colorize(State, Color - 32, false, Msg);
-colorize(#state_t{caller=command_line, intensity = high},
-         Color, false, Msg) when ?VALID_COLOR(Color) ->
-    lists:flatten(cf:format("~!" ++ [Color] ++"~ts~ts", [?PREFIX, Msg]));
-colorize(#state_t{caller=command_line, intensity = low},
-         Color, false, Msg) when ?VALID_COLOR(Color) ->
-    lists:flatten(cf:format("~!" ++ [Color] ++"~ts~!!~ts", [?PREFIX, Msg]));
+colorize(#state_t{caller = command_line, intensity = high},
+    Color, false, Msg) when ?VALID_COLOR(Color) ->
+    lists:flatten(cf:format("~!" ++ [Color] ++ "~ts~ts", [?PREFIX, Msg]));
+colorize(#state_t{caller = command_line, intensity = low},
+    Color, false, Msg) when ?VALID_COLOR(Color) ->
+    lists:flatten(cf:format("~!" ++ [Color] ++ "~ts~!!~ts", [?PREFIX, Msg]));
 colorize(_LogState, _Color, _Bold, Msg) ->
     Msg.
 
@@ -294,10 +294,10 @@ should_test() ->
 no_color_test() ->
     LogState = new(debug, command_line, none),
     ?assertEqual("test",
-                 colorize(LogState, ?RED, true, "test")).
+        colorize(LogState, ?RED, true, "test")).
 
 color_test() ->
     LogState = new(debug, command_line, high),
     ?assertEqual("\e[1;31m===> test\e[0m",
-                 colorize(LogState, ?RED, true, "test")).
+        colorize(LogState, ?RED, true, "test")).
 -endif.

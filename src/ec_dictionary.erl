@@ -13,28 +13,28 @@
 
 %% API
 -export([new/1,
-         has_key/2,
-         get/2,
-         get/3,
-         add/3,
-         remove/2,
-         has_value/2,
-         size/1,
-         to_list/1,
-         from_list/2,
-         keys/1]).
+    has_key/2,
+    get/2,
+    get/3,
+    add/3,
+    remove/2,
+    has_value/2,
+    size/1,
+    to_list/1,
+    from_list/2,
+    keys/1]).
 
 -export_type([dictionary/2,
-              key/1,
-              value/1]).
+    key/1,
+    value/1]).
 
 %%%===================================================================
 %%% Types
 %%%===================================================================
 
 -record(dict_t,
-        {callback,
-          data}).
+{callback,
+    data}).
 
 %% This should be opaque, but that kills dialyzer so for now we export it
 %% however you should not rely on the internal representation here
@@ -63,15 +63,15 @@
 -spec behaviour_info(atom()) -> [{atom(), arity()}] | undefined.
 behaviour_info(callbacks) ->
     [{new, 0},
-     {has_key, 2},
-     {get, 2},
-     {add, 3},
-     {remove, 2},
-     {has_value, 2},
-     {size, 1},
-     {to_list, 1},
-     {from_list, 1},
-     {keys, 1}];
+        {has_key, 2},
+        {get, 2},
+        {add, 3},
+        {remove, 2},
+        {has_value, 2},
+        {size, 1},
+        {to_list, 1},
+        {from_list, 1},
+        {keys, 1}];
 behaviour_info(_Other) ->
     undefined.
 -endif.
@@ -155,7 +155,7 @@ size(#dict_t{callback = Mod, data = Data}) ->
 %% pairs.
 %%
 %% @param Dict the base dictionary to make use of.
--spec to_list(Dict::dictionary(K, V)) -> [{key(K), value(V)}].
+-spec to_list(Dict :: dictionary(K, V)) -> [{key(K), value(V)}].
 to_list(#dict_t{callback = Mod, data = Data}) ->
     Mod:to_list(Data).
 
@@ -171,6 +171,6 @@ from_list(ModuleName, List) when is_list(List) ->
 %% @doc Return the keys of this dictionary as a list
 %%
 %% @param Dict the base dictionary to make use of.
--spec keys(Dict::dictionary(K, _V)) -> [key(K)].
+-spec keys(Dict :: dictionary(K, _V)) -> [key(K)].
 keys(#dict_t{callback = Mod, data = Data}) ->
     Mod:keys(Data).

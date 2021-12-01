@@ -8,35 +8,35 @@
 -module(ec_file).
 
 -export([
-         exists/1,
-         copy/2,
-         copy/3,
-         copy_file_info/3,
-         insecure_mkdtemp/0,
-         mkdir_path/1,
-         mkdir_p/1,
-         find/2,
-         is_symlink/1,
-         is_dir/1,
-         type/1,
-         real_dir_path/1,
-         remove/1,
-         remove/2,
-         md5sum/1,
-         sha1sum/1,
-         read/1,
-         write/2,
-         write_term/2
-        ]).
+    exists/1,
+    copy/2,
+    copy/3,
+    copy_file_info/3,
+    insecure_mkdtemp/0,
+    mkdir_path/1,
+    mkdir_p/1,
+    find/2,
+    is_symlink/1,
+    is_dir/1,
+    type/1,
+    real_dir_path/1,
+    remove/1,
+    remove/2,
+    md5sum/1,
+    sha1sum/1,
+    read/1,
+    write/2,
+    write_term/2
+]).
 
 -export_type([
-              option/0
-             ]).
+    option/0
+]).
 
 -include_lib("kernel/include/file.hrl").
 
 -define(CHECK_PERMS_MSG,
-        "Try checking that you have the correct permissions and try again~n").
+    "Try checking that you have the correct permissions and try again~n").
 
 %%============================================================================
 %% Types
@@ -50,18 +50,18 @@
 -spec exists(file:filename()) -> boolean().
 exists(Filename) ->
     case file:read_file_info(Filename) of
-        {ok, _}         ->
+        {ok, _} ->
             true;
         {error, _Reason} ->
             false
     end.
 
 %% @doc copy an entire directory to another location.
--spec copy(file:name(), file:name(), Options::[option()]) -> ok | {error, Reason::term()}.
+-spec copy(file:name(), file:name(), Options :: [option()]) -> ok | {error, Reason :: term()}.
 copy(From, To, []) ->
     copy_(From, To, []);
 copy(From, To, Options) ->
-    case proplists:get_value(recursive,  Options, false) of
+    case proplists:get_value(recursive, Options, false) of
         true ->
             case is_dir(From) of
                 false ->
@@ -75,15 +75,15 @@ copy(From, To, Options) ->
     end.
 
 %% @doc copy a file including timestamps,ownership and mode etc.
--spec copy(From::file:filename(), To::file:filename()) -> ok | {error, Reason::term()}.
+-spec copy(From :: file:filename(), To :: file:filename()) -> ok | {error, Reason :: term()}.
 copy(From, To) ->
     copy_(From, To, [{file_info, [mode, time, owner, group]}]).
 
 copy_(From, To, Options) ->
     Linked
         = case file:read_link(From) of
-            {ok, Linked0} -> Linked0;
-            {error, _} -> undefined
+              {ok, Linked0} -> Linked0;
+              {error, _} -> undefined
           end,
     case Linked =/= undefined orelse file:copy(From, To) of
         true ->
@@ -109,35 +109,35 @@ copy_file_info(To, From, FileInfoToKeep) ->
 
 write_file_info(To, FileInfo, FileInfoToKeep) ->
     WriteInfoFuns = [{mode, fun try_write_mode/2},
-                     {time, fun try_write_time/2},
-                     {group, fun try_write_group/2},
-                     {owner, fun try_write_owner/2}],
+        {time, fun try_write_time/2},
+        {group, fun try_write_group/2},
+        {owner, fun try_write_owner/2}],
     lists:foldl(fun(Info, Acc) ->
-                        case proplists:get_value(Info, WriteInfoFuns, undefined) of
-                            undefined ->
-                                Acc;
-                            F ->
-                                case F(To, FileInfo) of
-                                    ok ->
-                                        Acc;
-                                    {error, Reason} ->
-                                        [{Info, Reason} | Acc]
-                                end
-                        end
+        case proplists:get_value(Info, WriteInfoFuns, undefined) of
+            undefined ->
+                Acc;
+            F ->
+                case F(To, FileInfo) of
+                    ok ->
+                        Acc;
+                    {error, Reason} ->
+                        [{Info, Reason} | Acc]
+                end
+        end
                 end, [], FileInfoToKeep).
 
 
-try_write_mode(To, #file_info{mode=Mode}) ->
-    file:write_file_info(To, #file_info{mode=Mode}).
+try_write_mode(To, #file_info{mode = Mode}) ->
+    file:write_file_info(To, #file_info{mode = Mode}).
 
-try_write_time(To, #file_info{atime=Atime, mtime=Mtime}) ->
-    file:write_file_info(To, #file_info{atime=Atime, mtime=Mtime}).
+try_write_time(To, #file_info{atime = Atime, mtime = Mtime}) ->
+    file:write_file_info(To, #file_info{atime = Atime, mtime = Mtime}).
 
-try_write_owner(To, #file_info{uid=OwnerId}) ->
-    file:write_file_info(To, #file_info{uid=OwnerId}).
+try_write_owner(To, #file_info{uid = OwnerId}) ->
+    file:write_file_info(To, #file_info{uid = OwnerId}).
 
-try_write_group(To, #file_info{gid=OwnerId}) ->
-    file:write_file_info(To, #file_info{gid=OwnerId}).
+try_write_group(To, #file_info{gid = OwnerId}) ->
+    file:write_file_info(To, #file_info{gid = OwnerId}).
 
 %% @doc return an md5 checksum string or a binary. Same as unix utility of
 %%      same name.
@@ -161,16 +161,16 @@ sha1sum(Value) ->
 %% <pre>
 %% Example: remove("./tmp_dir", [recursive]).
 %% </pre>
--spec remove(file:name(), Options::[option()]) -> ok | {error, Reason::term()}.
+-spec remove(file:name(), Options :: [option()]) -> ok | {error, Reason :: term()}.
 remove(Path, Options) ->
     case lists:member(recursive, Options) of
         false -> file:delete(Path);
-        true  -> remove_recursive(Path, Options)
+        true -> remove_recursive(Path, Options)
     end.
 
 
 %% @doc delete a file.
--spec remove(file:name()) -> ok | {error, Reason::term()}.
+-spec remove(file:name()) -> ok | {error, Reason :: term()}.
 remove(Path) ->
     remove(Path, []).
 
@@ -224,7 +224,7 @@ real_dir_path(Path) ->
 
 %% @doc make a unique temporary directory. Similar function to BSD stdlib
 %% function of the same name.
--spec insecure_mkdtemp() -> TmpDirPath::file:name() | {error, term()}.
+-spec insecure_mkdtemp() -> TmpDirPath :: file:name() | {error, term()}.
 insecure_mkdtemp() ->
     UniqueNumber = erlang:integer_to_list(erlang:trunc(random_uniform() * 1000000000000)),
     TmpDirPath =
@@ -236,7 +236,7 @@ insecure_mkdtemp() ->
     end.
 
 %% @doc Makes a directory including parent dirs if they are missing.
--spec mkdir_p(file:name()) -> ok | {error, Reason::term()}.
+-spec mkdir_p(file:name()) -> ok | {error, Reason :: term()}.
 mkdir_p(Path) ->
     %% We are exploiting a feature of ensuredir that that creates all
     %% directories up to the last element in the filename, then ignores
@@ -247,13 +247,13 @@ mkdir_p(Path) ->
 
 
 %% @doc Makes a directory including parent dirs if they are missing.
--spec mkdir_path(file:name()) -> ok | {error, Reason::term()}.
+-spec mkdir_path(file:name()) -> ok | {error, Reason :: term()}.
 mkdir_path(Path) ->
     mkdir_p(Path).
 
 
 %% @doc read a file from the file system. Provide UEX exeption on failure.
--spec read(FilePath::file:filename()) -> {ok, binary()} | {error, Reason::term()}.
+-spec read(FilePath :: file:filename()) -> {ok, binary()} | {error, Reason :: term()}.
 read(FilePath) ->
     %% Now that we are moving away from exceptions again this becomes
     %% a bit redundant but we want to be backwards compatible as much
@@ -262,7 +262,7 @@ read(FilePath) ->
 
 
 %% @doc write a file to the file system. Provide UEX exeption on failure.
--spec write(FileName::file:filename(), Contents::string()) -> ok | {error, Reason::term()}.
+-spec write(FileName :: file:filename(), Contents :: string()) -> ok | {error, Reason :: term()}.
 write(FileName, Contents) ->
     %% Now that we are moving away from exceptions again this becomes
     %% a bit redundant but we want to be backwards compatible as much
@@ -270,13 +270,13 @@ write(FileName, Contents) ->
     file:write_file(FileName, Contents).
 
 %% @doc write a term out to a file so that it can be consulted later.
--spec write_term(file:filename(), term()) -> ok | {error, Reason::term()}.
+-spec write_term(file:filename(), term()) -> ok | {error, Reason :: term()}.
 write_term(FileName, Term) ->
     write(FileName, lists:flatten(io_lib:fwrite("~p. ", [Term]))).
 
 %% @doc Finds files and directories that match the regexp supplied in
 %%  the TargetPattern regexp.
--spec find(FromDir::file:name(), TargetPattern::string()) -> [file:name()].
+-spec find(FromDir :: file:name(), TargetPattern :: string()) -> [file:name()].
 find([], _) ->
     [];
 find(FromDir, TargetPattern) ->
@@ -300,27 +300,27 @@ find(FromDir, TargetPattern) ->
 -spec find_in_subdirs(file:name(), string()) -> [file:name()].
 find_in_subdirs(FromDir, TargetPattern) ->
     lists:foldl(fun(CheckFromDir, Acc)
-                      when CheckFromDir == FromDir ->
-                        Acc;
-                   (ChildFromDir, Acc) ->
-                        case find(ChildFromDir, TargetPattern) of
-                            []  -> Acc;
-                            Res -> Res ++ Acc
-                        end
+        when CheckFromDir == FromDir ->
+        Acc;
+        (ChildFromDir, Acc) ->
+            case find(ChildFromDir, TargetPattern) of
+                [] -> Acc;
+                Res -> Res ++ Acc
+            end
                 end,
-                [],
-                sub_files(FromDir)).
+        [],
+        sub_files(FromDir)).
 
 
 
--spec remove_recursive(file:name(), Options::list()) -> ok | {error, Reason::term()}.
+-spec remove_recursive(file:name(), Options :: list()) -> ok | {error, Reason :: term()}.
 remove_recursive(Path, Options) ->
     case is_dir(Path) of
         false ->
             file:delete(Path);
         true ->
             lists:foreach(fun(ChildPath) ->
-                                  remove_recursive(ChildPath, Options)
+                remove_recursive(ChildPath, Options)
                           end, sub_files(Path)),
             file:del_dir(Path)
     end.
@@ -341,29 +341,29 @@ tmp() ->
     end.
 
 %% Copy the subfiles of the From directory to the to directory.
--spec copy_subfiles(file:name(), file:name(), [option()]) -> {error, Reason::term()} | ok.
+-spec copy_subfiles(file:name(), file:name(), [option()]) -> {error, Reason :: term()} | ok.
 copy_subfiles(From, To, Options) ->
     Fun =
         fun(ChildFrom) ->
-                ChildTo = filename:join([To, filename:basename(ChildFrom)]),
-                copy(ChildFrom, ChildTo, Options)
+            ChildTo = filename:join([To, filename:basename(ChildFrom)]),
+            copy(ChildFrom, ChildTo, Options)
         end,
     lists:foreach(Fun, sub_files(From)).
 
--spec make_dir_if_dir(file:name()) -> ok | {error, Reason::term()}.
+-spec make_dir_if_dir(file:name()) -> ok | {error, Reason :: term()}.
 make_dir_if_dir(File) ->
     case is_dir(File) of
-        true  -> ok;
+        true -> ok;
         false -> mkdir_path(File)
     end.
 
 %% @doc convert a list of integers into hex.
 -spec hex(string() | non_neg_integer()) -> string().
-hex(L) when is_list (L) ->
+hex(L) when is_list(L) ->
     lists:flatten([hex(I) || I <- L]);
 hex(I) when I > 16#f ->
     [hex0((I band 16#f0) bsr 4), hex0((I band 16#0f))];
-hex(I)               ->
+hex(I) ->
     [$0, hex0(I)].
 
 hex0(10) -> $a;
@@ -372,7 +372,7 @@ hex0(12) -> $c;
 hex0(13) -> $d;
 hex0(14) -> $e;
 hex0(15) -> $f;
-hex0(I)  -> $0 + I.
+hex0(I) -> $0 + I.
 
 
 sub_files(From) ->
@@ -416,8 +416,8 @@ file_test() ->
     write_term(TermFile, "term"),
     ?assertMatch({ok, <<"\"term\". ">>}, read(TermFile)),
     copy(filename:dirname(TermFile),
-         filename:dirname(TermFileCopy),
-         [recursive]).
+        filename:dirname(TermFileCopy),
+        [recursive]).
 
 teardown_test() ->
     Dir = insecure_mkdtemp(),

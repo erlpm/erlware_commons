@@ -15,16 +15,16 @@
 
 %% API
 -export([new/0,
-         has_key/2,
-         get/2,
-         get/3,
-         add/3,
-         remove/2,
-         has_value/2,
-         size/1,
-         to_list/1,
-         from_list/1,
-         keys/1]).
+    has_key/2,
+    get/2,
+    get/3,
+    add/3,
+    remove/2,
+    has_value/2,
+    size/1,
+    to_list/1,
+    from_list/1,
+    keys/1]).
 
 %%%===================================================================
 %%% API
@@ -44,7 +44,7 @@ new() ->
 %%
 %% @param Object The dictory object to check
 %% @param Key The key to check the dictionary for
--spec has_key(ec_dictionary:key(K), Object::gb_trees:tree(K, _V)) -> boolean().
+-spec has_key(ec_dictionary:key(K), Object :: gb_trees:tree(K, _V)) -> boolean().
 has_key(Key, Data) ->
     case gb_trees:lookup(Key, Data) of
         {value, _Val} ->
@@ -59,7 +59,7 @@ has_key(Key, Data) ->
 %% @param Object The dictionary object to return the value from
 %% @param Key The key requested
 %% when the key does not exist @throws not_found
--spec get(ec_dictionary:key(K), Object::gb_trees:tree(K, V)) ->
+-spec get(ec_dictionary:key(K), Object :: gb_trees:tree(K, V)) ->
     ec_dictionary:value(V).
 get(Key, Data) ->
     case gb_trees:lookup(Key, Data) of
@@ -70,8 +70,8 @@ get(Key, Data) ->
     end.
 
 -spec get(ec_dictionary:key(K),
-          ec_dictionary:value(V),
-          Object::gb_trees:tree(K, V)) ->
+    ec_dictionary:value(V),
+    Object :: gb_trees:tree(K, V)) ->
     ec_dictionary:value(V).
 get(Key, Default, Data) ->
     case gb_trees:lookup(Key, Data) of
@@ -88,7 +88,7 @@ get(Key, Default, Data) ->
 %% @param Key the key to add
 %% @param Value the value to add
 -spec add(ec_dictionary:key(K), ec_dictionary:value(V),
-          Object::gb_trees:tree(K, V)) ->
+    Object :: gb_trees:tree(K, V)) ->
     gb_trees:tree(K, V).
 add(Key, Value, Data) ->
     gb_trees:enter(Key, Value, Data).
@@ -98,7 +98,7 @@ add(Key, Value, Data) ->
 %%
 %% @param Object the dictionary object to remove the value from
 %% @param Key the key of the key/value pair to remove
--spec remove(ec_dictionary:key(K), Object::gb_trees:tree(K, V)) ->
+-spec remove(ec_dictionary:key(K), Object :: gb_trees:tree(K, V)) ->
     gb_trees:tree(K, V).
 remove(Key, Data) ->
     gb_trees:delete_any(Key, Data).
@@ -107,19 +107,19 @@ remove(Key, Data) ->
 %%
 %% @param Object the dictionary object to check
 %% @param Value The value to check if exists
--spec has_value(ec_dictionary:value(V), Object::gb_trees:tree(_K, V)) -> boolean().
+-spec has_value(ec_dictionary:value(V), Object :: gb_trees:tree(_K, V)) -> boolean().
 has_value(Value, Data) ->
     lists:member(Value, gb_trees:values(Data)).
 
 %% @doc return the current number of key value pairs in the dictionary
 %%
 %% @param Object the object return the size for.
--spec size(Object::gb_trees:tree(_K, _V)) -> non_neg_integer().
+-spec size(Object :: gb_trees:tree(_K, _V)) -> non_neg_integer().
 size(Data) ->
     gb_trees:size(Data).
 
 -spec to_list(gb_trees:tree(K, V)) -> [{ec_dictionary:key(K),
-                                        ec_dictionary:value(V)}].
+    ec_dictionary:value(V)}].
 to_list(Data) ->
     gb_trees:to_list(Data).
 
@@ -127,12 +127,12 @@ to_list(Data) ->
     gb_trees:tree(K, V).
 from_list(List) when is_list(List) ->
     lists:foldl(fun({Key, Value}, Dict) ->
-                        gb_trees:enter(Key, Value, Dict)
+        gb_trees:enter(Key, Value, Dict)
                 end,
-                gb_trees:empty(),
-                List).
+        gb_trees:empty(),
+        List).
 
--spec keys(gb_trees:tree(K,_V)) -> [ec_dictionary:key(K)].
+-spec keys(gb_trees:tree(K, _V)) -> [ec_dictionary:key(K)].
 keys(Data) ->
     gb_trees:keys(Data).
 
@@ -179,12 +179,12 @@ add_test() ->
 
     Dict01 = ec_dictionary:add(Key1, Value1, Dict0),
     Dict02 = ec_dictionary:add(Key3, Value3,
-                               ec_dictionary:add(Key2, Value2,
-                                                 Dict01)),
+        ec_dictionary:add(Key2, Value2,
+            Dict01)),
     Dict1 =
         ec_dictionary:add(Key5, Value5,
-                          ec_dictionary:add(Key4, Value4,
-                                            Dict02)),
+            ec_dictionary:add(Key4, Value4,
+                Dict02)),
 
     ?assertMatch(Value1, ec_dictionary:get(Key1, Dict1)),
     ?assertMatch(Value2, ec_dictionary:get(Key2, Dict1)),
@@ -194,7 +194,7 @@ add_test() ->
 
 
     Dict2 = ec_dictionary:add(Key3, Value5,
-                              ec_dictionary:add(Key2, Value4, Dict1)),
+        ec_dictionary:add(Key2, Value4, Dict1)),
 
 
     ?assertMatch(Value1, ec_dictionary:get(Key1, Dict2)),
@@ -206,7 +206,7 @@ add_test() ->
 
     ?assertThrow(not_found, ec_dictionary:get(should_blow_up, Dict2)),
     ?assertThrow(not_found, ec_dictionary:get("This should blow up too",
-                                              Dict2)).
+        Dict2)).
 
 
 

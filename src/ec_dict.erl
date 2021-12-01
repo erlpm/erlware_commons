@@ -16,16 +16,16 @@
 
 %% API
 -export([new/0,
-         has_key/2,
-         get/2,
-         get/3,
-         add/3,
-         remove/2,
-         has_value/2,
-         size/1,
-         to_list/1,
-         from_list/1,
-         keys/1]).
+    has_key/2,
+    get/2,
+    get/3,
+    add/3,
+    remove/2,
+    has_value/2,
+    size/1,
+    to_list/1,
+    from_list/1,
+    keys/1]).
 
 -export_type([dictionary/2]).
 
@@ -48,59 +48,59 @@
 new() ->
     dict:new().
 
--spec has_key(ec_dictionary:key(K), Object::dictionary(K, _V)) -> boolean().
+-spec has_key(ec_dictionary:key(K), Object :: dictionary(K, _V)) -> boolean().
 has_key(Key, Data) ->
     dict:is_key(Key, Data).
 
--spec get(ec_dictionary:key(K), Object::dictionary(K, V)) ->
+-spec get(ec_dictionary:key(K), Object :: dictionary(K, V)) ->
     ec_dictionary:value(V).
 get(Key, Data) ->
     case dict:find(Key, Data) of
         {ok, Value} ->
             Value;
-         error ->
+        error ->
             throw(not_found)
     end.
 
 -spec get(ec_dictionary:key(K),
-          ec_dictionary:value(V),
-          Object::dictionary(K, V)) ->
-                 ec_dictionary:value(V).
+    ec_dictionary:value(V),
+    Object :: dictionary(K, V)) ->
+    ec_dictionary:value(V).
 get(Key, Default, Data) ->
     case dict:find(Key, Data) of
         {ok, Value} ->
             Value;
-         error ->
+        error ->
             Default
     end.
 
 -spec add(ec_dictionary:key(K), ec_dictionary:value(V),
-          Object::dictionary(K, V)) ->
+    Object :: dictionary(K, V)) ->
     dictionary(K, V).
 add(Key, Value, Data) ->
     dict:store(Key, Value, Data).
 
--spec remove(ec_dictionary:key(K), Object::dictionary(K, V)) ->
+-spec remove(ec_dictionary:key(K), Object :: dictionary(K, V)) ->
     dictionary(K, V).
 remove(Key, Data) ->
     dict:erase(Key, Data).
 
--spec has_value(ec_dictionary:value(V), Object::dictionary(_K, V)) -> boolean().
+-spec has_value(ec_dictionary:value(V), Object :: dictionary(_K, V)) -> boolean().
 has_value(Value, Data) ->
     dict:fold(fun(_, NValue, _) when NValue == Value ->
-                      true;
-                 (_, _, Acc) ->
-                      Acc
+        true;
+        (_, _, Acc) ->
+            Acc
               end,
-              false,
-              Data).
+        false,
+        Data).
 
--spec size(Object::dictionary(_K, _V)) -> non_neg_integer().
+-spec size(Object :: dictionary(_K, _V)) -> non_neg_integer().
 size(Data) ->
     dict:size(Data).
 
 -spec to_list(dictionary(K, V)) -> [{ec_dictionary:key(K),
-                                     ec_dictionary:value(V)}].
+    ec_dictionary:value(V)}].
 to_list(Data) ->
     dict:to_list(Data).
 

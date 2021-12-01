@@ -10,14 +10,14 @@
 -module(ec_compile).
 
 -export([beam_to_erl_source/2,
-         erl_source_to_core_ast/1,
-         erl_source_to_erl_ast/1,
-         erl_source_to_asm/1,
-         erl_source_to_erl_syntax/1,
-         erl_string_to_core_ast/1,
-         erl_string_to_erl_ast/1,
-         erl_string_to_asm/1,
-         erl_string_to_erl_syntax/1]).
+    erl_source_to_core_ast/1,
+    erl_source_to_erl_ast/1,
+    erl_source_to_asm/1,
+    erl_source_to_erl_syntax/1,
+    erl_string_to_core_ast/1,
+    erl_string_to_erl_ast/1,
+    erl_string_to_asm/1,
+    erl_string_to_erl_syntax/1]).
 
 %%%===================================================================
 %%% API
@@ -33,21 +33,21 @@
 %% it.
 -spec beam_to_erl_source(string(), string()) -> ok | term().
 beam_to_erl_source(BeamFName, ErlFName) ->
-  case beam_lib:chunks(BeamFName, [abstract_code]) of
-    {ok, {_, [{abstract_code, {raw_abstract_v1,Forms}}]}} ->
-          Src =
-              erl_prettypr:format(erl_syntax:form_list(tl(Forms))),
-          {ok, Fd} = file:open(ErlFName, [write]),
-          io:fwrite(Fd, "~ts~n", [Src]),
-          file:close(Fd);
-      Error ->
-          Error
-  end.
+    case beam_lib:chunks(BeamFName, [abstract_code]) of
+        {ok, {_, [{abstract_code, {raw_abstract_v1, Forms}}]}} ->
+            Src =
+                erl_prettypr:format(erl_syntax:form_list(tl(Forms))),
+            {ok, Fd} = file:open(ErlFName, [write]),
+            io:fwrite(Fd, "~ts~n", [Src]),
+            file:close(Fd);
+        Error ->
+            Error
+    end.
 
 %% @doc compile an erlang source file into a Core Erlang AST
 %%
 %% @param Path - The path to the erlang source file
--spec erl_source_to_core_ast(file:filename()) -> CoreAst::term().
+-spec erl_source_to_core_ast(file:filename()) -> CoreAst :: term().
 erl_source_to_core_ast(Path) ->
     {ok, Contents} = file:read_file(Path),
     erl_string_to_core_ast(binary_to_list(Contents)).
@@ -55,7 +55,7 @@ erl_source_to_core_ast(Path) ->
 %% @doc compile an erlang source file into an Erlang AST
 %%
 %% @param Path - The path to the erlang source file
--spec erl_source_to_erl_ast(file:filename()) -> ErlangAst::term().
+-spec erl_source_to_erl_ast(file:filename()) -> ErlangAst :: term().
 erl_source_to_erl_ast(Path) ->
     {ok, Contents} = file:read_file(Path),
     erl_string_to_erl_ast(binary_to_list(Contents)).
@@ -64,7 +64,7 @@ erl_source_to_erl_ast(Path) ->
 %% the relevant ASM
 %%
 %% @param Path - The path to the erlang source file
--spec erl_source_to_asm(file:filename()) -> ErlangAsm::term().
+-spec erl_source_to_asm(file:filename()) -> ErlangAsm :: term().
 erl_source_to_asm(Path) ->
     {ok, Contents} = file:read_file(Path),
     erl_string_to_asm(binary_to_list(Contents)).
@@ -82,30 +82,30 @@ erl_source_to_erl_syntax(Path) ->
 %% Erlang AST
 %%
 %% @param StringExpr - The path to the erlang source file
--spec erl_string_to_erl_ast(string()) -> ErlangAst::term().
+-spec erl_string_to_erl_ast(string()) -> ErlangAst :: term().
 erl_string_to_erl_ast(StringExpr) ->
     Forms0 =
         lists:foldl(fun(<<>>, Acc) ->
-                            Acc;
-                       (<<"\n\n">>, Acc) ->
-                            Acc;
-                       (El, Acc) ->
-                            {ok, Tokens, _} =
-                                erl_scan:string(binary_to_list(El)
-                                                ++ "."),
-                            [Tokens | Acc]
+            Acc;
+            (<<"\n\n">>, Acc) ->
+                Acc;
+            (El, Acc) ->
+                {ok, Tokens, _} =
+                    erl_scan:string(binary_to_list(El)
+                    ++ "."),
+                [Tokens | Acc]
                     end, [], re:split(StringExpr, "\\.\n")),
     %% No need to reverse. This will rereverse for us
     lists:foldl(fun(Form, Forms) ->
-                        {ok, ErlAST} = erl_parse:parse_form(Form),
-                        [ErlAST | Forms]
+        {ok, ErlAST} = erl_parse:parse_form(Form),
+        [ErlAST | Forms]
                 end, [], Forms0).
 
 %% @doc compile a string representing an erlang expression into a
 %% Core Erlang AST
 %%
 %% @param StringExpr - The path to the erlang source file
--spec erl_string_to_core_ast(string()) -> CoreAst::term().
+-spec erl_string_to_core_ast(string()) -> CoreAst :: term().
 erl_string_to_core_ast(StringExpr) ->
     compile:forms(erl_string_to_erl_ast(StringExpr), [to_core]).
 
@@ -113,7 +113,7 @@ erl_string_to_core_ast(StringExpr) ->
 %% that represents the ASM
 %%
 %% @param StringExpr - The path to the erlang source file
--spec erl_string_to_asm(string()) -> ErlangAsm::term().
+-spec erl_string_to_asm(string()) -> ErlangAsm :: term().
 erl_string_to_asm(StringExpr) ->
     compile:forms(erl_string_to_erl_ast(StringExpr), ['S']).
 
@@ -123,7 +123,7 @@ erl_string_to_asm(StringExpr) ->
 %% @param StringExpr - The string representing the erlang code.
 -spec erl_string_to_erl_syntax(string() | binary()) -> string().
 erl_string_to_erl_syntax(BinaryExpr)
-  when erlang:is_binary(BinaryExpr) ->
+    when erlang:is_binary(BinaryExpr) ->
     erlang:binary_to_list(BinaryExpr);
 erl_string_to_erl_syntax(StringExpr) ->
     {ok, Tokens, _} = erl_scan:string(StringExpr),

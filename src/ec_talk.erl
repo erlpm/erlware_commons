@@ -32,23 +32,23 @@
 
 %% API
 -export([ask/1,
-         ask/2,
-         ask_default/2,
-         ask_default/3,
-         ask/3,
-         say/1,
-         say/2]).
+    ask/2,
+    ask_default/2,
+    ask_default/3,
+    ask/3,
+    say/1,
+    say/2]).
 
 -export_type([prompt/0,
-              type/0,
-              supported/0]).
+    type/0,
+    supported/0]).
 
 %%============================================================================
 %% Types
 %%============================================================================
 -type prompt() :: string().
 -type type() :: boolean | number | string.
--type supported() ::  boolean() | number() | string().
+-type supported() :: boolean() | number() | string().
 
 %%============================================================================
 %% API
@@ -77,18 +77,18 @@ ask_default(Prompt, Default) ->
 
 %% @doc Asks the user to respond to the prompt. Trys to return the
 %% value in the format specified by 'Type'.
--spec ask(prompt(), type()) ->  supported().
+-spec ask(prompt(), type()) -> supported().
 ask(Prompt, boolean) ->
     ask_convert(Prompt, fun get_boolean/1, boolean, none);
 ask(Prompt, number) ->
-    ask_convert(Prompt, fun get_integer/1, number,  none);
+    ask_convert(Prompt, fun get_integer/1, number, none);
 ask(Prompt, string) ->
     ask_convert(Prompt, fun get_string/1, string, none).
 
 %% @doc Asks the user to respond to the prompt. Trys to return the
 %% value in the format specified by 'Type'.
--spec ask_default(prompt(), type(), supported()) ->  supported().
-ask_default(Prompt, boolean, Default)  ->
+-spec ask_default(prompt(), type(), supported()) -> supported().
+ask_default(Prompt, boolean, Default) ->
     ask_convert(Prompt, fun get_boolean/1, boolean, Default);
 ask_default(Prompt, number, Default) ->
     ask_convert(Prompt, fun get_integer/1, number, Default);
@@ -99,10 +99,10 @@ ask_default(Prompt, string, Default) ->
 %% between min and max.
 -spec ask(prompt(), number(), number()) -> number().
 ask(Prompt, Min, Max)
-  when erlang:is_list(Prompt),
-       erlang:is_number(Min),
-       erlang:is_number(Max),
-       Min =< Max ->
+    when erlang:is_list(Prompt),
+    erlang:is_number(Min),
+    erlang:is_number(Max),
+    Min =< Max ->
     Res = ask_convert(Prompt, fun get_integer/1, number, none),
     case (Res >= Min andalso Res =< Max) of
         true ->
@@ -118,15 +118,15 @@ ask(Prompt, Min, Max)
 %% @doc Actually does the work of asking, checking result and
 %% translating result into the requested format.
 -spec ask_convert(prompt(), fun((any()) -> any()), type(), supported() | none) -> supported().
-ask_convert(Prompt, TransFun, Type,  Default) ->
+ask_convert(Prompt, TransFun, Type, Default) ->
     NewPrompt =
         erlang:binary_to_list(erlang:iolist_to_binary([Prompt,
-                                                       case Default of
-                                                           none ->
-                                                               [];
-                                                           Default ->
-                                                               [" (", io_lib:format("~p", [Default]) , ")"]
-                                                       end, "> "])),
+            case Default of
+                none ->
+                    [];
+                Default ->
+                    [" (", io_lib:format("~p", [Default]), ")"]
+            end, "> "])),
     Data = trim(trim(io:get_line(NewPrompt)), both, [$\n]),
     Ret = TransFun(Data),
     case Ret of
@@ -202,7 +202,7 @@ trim(Str) -> string:trim(Str).
 trim(Str, both, Chars) -> string:trim(Str, both, Chars).
 -else.
 trim(Str) -> string:strip(Str).
-trim(Str, Dir, [Chars|_]) -> string:strip(Str, Dir, Chars).
+trim(Str, Dir, [Chars | _]) -> string:strip(Str, Dir, Chars).
 -endif.
 
 %%%====================================================================
@@ -213,17 +213,17 @@ trim(Str, Dir, [Chars|_]) -> string:strip(Str, Dir, Chars).
 
 general_test_() ->
     [?_test(42 == get_integer("42")),
-     ?_test(500211 == get_integer("500211")),
-     ?_test(1234567890 == get_integer("1234567890")),
-     ?_test(12345678901234567890 == get_integer("12345678901234567890")),
-     ?_test(true == get_boolean("true")),
-     ?_test(false == get_boolean("false")),
-     ?_test(true == get_boolean("Ok")),
-     ?_test(true == get_boolean("ok")),
-     ?_test(true == get_boolean("Y")),
-     ?_test(true == get_boolean("y")),
-     ?_test(false == get_boolean("False")),
-     ?_test(false == get_boolean("No")),
-     ?_test(false == get_boolean("no"))].
+        ?_test(500211 == get_integer("500211")),
+        ?_test(1234567890 == get_integer("1234567890")),
+        ?_test(12345678901234567890 == get_integer("12345678901234567890")),
+        ?_test(true == get_boolean("true")),
+        ?_test(false == get_boolean("false")),
+        ?_test(true == get_boolean("Ok")),
+        ?_test(true == get_boolean("ok")),
+        ?_test(true == get_boolean("Y")),
+        ?_test(true == get_boolean("y")),
+        ?_test(false == get_boolean("False")),
+        ?_test(false == get_boolean("No")),
+        ?_test(false == get_boolean("no"))].
 
 -endif.
